@@ -1713,6 +1713,14 @@ pub async fn test_bad_auth_extra_headers_with_provider_and_stream(
                 "Unexpected error: {res}"
             );
         }
+        "nvidia_nim" => {
+            assert!(
+                res["error"].as_str().unwrap().contains("Bearer token")
+                    || res["error"].as_str().unwrap().contains("401 Unauthorized")
+                    || res["error"].as_str().unwrap().contains("Authentication"),
+                "Unexpected error: {res}"
+            );
+        }
         "openrouter" => {
             assert!(
                 res["error"].as_str().unwrap().contains("400 Bad Request")
@@ -8043,8 +8051,6 @@ pub async fn test_stop_sequences_inference_request_with_provider(
                 "deepseek",
                 "openrouter",
                 "openai",
-                "sglang",
-                "mistral",
                 "azure",
                 "groq",
                 "hyperbolic",

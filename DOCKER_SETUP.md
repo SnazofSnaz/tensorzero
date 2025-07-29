@@ -15,22 +15,12 @@ This directory contains everything you need to run the complete TensorZero stack
 .\start-tensorzero.ps1
 ```
 
-**Option 2: Batch file**
-```cmd
-start-tensorzero.bat
-```
-
-**Option 3: Manual Docker Compose**
+**Option 2: Manual Docker Compose**
 ```bash
 docker-compose up -d
 ```
 
 ### Stop TensorZero
-
-**PowerShell:**
-```powershell
-.\stop-tensorzero.ps1
-```
 
 **Manual:**
 ```bash
@@ -40,7 +30,7 @@ docker-compose down
 ## 🔧 Configuration
 
 ### Environment Variables (.env)
-Copy `.env.example` to `.env` and configure your API keys:
+Create `.env` and configure your API keys:
 
 ```bash
 # Required for the example configuration
