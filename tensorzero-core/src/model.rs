@@ -638,7 +638,9 @@ fn consolidate_usage(chunks: &[ProviderInferenceResponseChunk]) -> Usage {
 pub struct UninitializedModelProvider {
     #[serde(flatten)]
     pub config: UninitializedProviderConfig,
+    #[cfg_attr(test, ts(skip))]
     pub extra_body: Option<ExtraBodyConfig>,
+    #[cfg_attr(test, ts(skip))]
     pub extra_headers: Option<ExtraHeadersConfig>,
     pub timeouts: Option<TimeoutsConfig>,
     /// If `true`, we emit a warning and discard chunks that we don't recognize
@@ -656,7 +658,9 @@ pub struct UninitializedModelProvider {
 pub struct ModelProvider {
     pub name: Arc<str>,
     pub config: ProviderConfig,
+    #[cfg_attr(test, ts(skip))]
     pub extra_headers: Option<ExtraHeadersConfig>,
+    #[cfg_attr(test, ts(skip))]
     pub extra_body: Option<ExtraBodyConfig>,
     pub timeouts: Option<TimeoutsConfig>,
     /// See `UninitializedModelProvider.discard_unknown_chunks`.
@@ -948,14 +952,6 @@ pub enum UninitializedProviderConfig {
         #[cfg_attr(test, ts(type = "string | null"))]
         api_key_location: Option<CredentialLocation>,
     },
-    #[strum(serialize = "nvidia_nim")]
-    #[serde(rename = "nvidia_nim")]
-    NvidiaNim {
-        model_name: Option<String>,
-        api_base: Option<Url>,
-        #[cfg_attr(test, ts(type = "string | null"))]
-        api_key_location: Option<CredentialLocation>,
-    },
     OpenAI {
         model_name: String,
         api_base: Option<Url>,
@@ -1122,23 +1118,6 @@ impl UninitializedProviderConfig {
                 model_name,
                 api_key_location,
             } => ProviderConfig::Mistral(MistralProvider::new(model_name, api_key_location)?),
-            UninitializedProviderConfig::NvidiaNim {
-                model_name,
-                api_base,
-                api_key_location,
-            } => {
-                let model_name = model_name.ok_or_else(|| {
-                    Error::new(ErrorDetails::Config {
-                        message: "NVIDIA NIM provider requires a model_name to be specified"
-                            .to_string(),
-                    })
-                })?;
-                ProviderConfig::NvidiaNim(NvidiaNimProvider::new(
-                    model_name,
-                    api_base,
-                    api_key_location,
-                )?)
-            }
             UninitializedProviderConfig::OpenAI {
                 model_name,
                 api_base,
@@ -1835,7 +1814,6 @@ const SHORTHAND_MODEL_PREFIXES: &[&str] = &[
     "hyperbolic::",
     "groq::",
     "mistral::",
-    "nvidia_nim::",
     "openai::",
     "openrouter::",
     "together::",
@@ -1870,9 +1848,6 @@ impl ShorthandModelConfig for ModelConfig {
             "groq" => ProviderConfig::Groq(GroqProvider::new(model_name, None)?),
             "hyperbolic" => ProviderConfig::Hyperbolic(HyperbolicProvider::new(model_name, None)?),
             "mistral" => ProviderConfig::Mistral(MistralProvider::new(model_name, None)?),
-            "nvidia_nim" => {
-                ProviderConfig::NvidiaNim(NvidiaNimProvider::new(model_name, None, None)?)
-            }
             "openai" => ProviderConfig::OpenAI(OpenAIProvider::new(model_name, None, None)?),
             "openrouter" => ProviderConfig::OpenRouter(OpenRouterProvider::new(model_name, None)?),
             "together" => ProviderConfig::Together(TogetherProvider::new(
